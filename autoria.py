@@ -31,24 +31,28 @@ def get_content(html): #збвр данних
                 "City": item.find("span", class_= "item region").text[:-1],
                 "Fuel": item.find(lambda tag: tag.name == 'span' and tag.get('class') == ['item']).text.replace("•", "")
             })
-        pages = soup.find_all("a", class_= "page-link")
+        pages = soup.find_all('span', class_='page-item mhide')
+        p1 = 1
         for page in pages:
-            if page.find("a", class_= "page-link"):
-                print(page)
-        return products #повертаємо сптсок товарів 
+            p = int(page.text)
+            if p > p1:
+                p1 = p
+        return products, p1 #повертаємо сптсок товарів
     else:
         print(html.status_code)
 
 
 def parse():
     html = get_html(URL)
-    prod1 = get_content(html)
+    prod1, pages = get_content(html)
     prod = list()
     prod.extend(prod1)
-    #for i in range(1,7): #задаємл кільк сторінок на сайті
-     #   html = get_html(f"https://scrapingclub.com/exercise/list_basic/?page={i}") 
-      #  prod.extend(get_content(html))
-       # print(f"Parsing {i} page from 6 pages")
+    print(f"Parsing 1 page from {pages} pages")
+    for i in range(2,pages+1): #задаємл кільк сторінок на сайті
+       html = get_html(f"https://auto.ria.com/uk/newauto/marka-subaru/?page={i}") 
+       prod.extend(get_content(html))
+       print(f"Parsing {i} page from {pages} pages")
+    print(prod)
     #savedata(prod)
 
 
